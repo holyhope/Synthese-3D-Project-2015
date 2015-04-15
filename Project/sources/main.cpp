@@ -1,57 +1,120 @@
+#include <freeflycamera.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <scene.h>
+#include <sdlglutils.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_events.h>
+#include <SDL/SDL_stdinc.h>
+#include <SDL/SDL_timer.h>
 #include <SDL/SDL_video.h>
+#include <vector3d.h>
 #include <cstdlib>
 
-#include "main.h"
+#define FPS 50
+#define LARGEUR_FENETRE 640
+#define HAUTEUR_FENETRE 480
+
+void DrawGL();
+
+FreeFlyCamera * camera;
+
+void stop() {
+	delete camera;
+	SDL_Quit();
+}
 
 int main(int argc, char *argv[]) {
 	SDL_Event event;
+	const Uint32 time_per_frame = 1000 / FPS;
+	unsigned int width = LARGEUR_FENETRE;
+	unsigned int height = HAUTEUR_FENETRE;
+
+	Uint32 last_time, current_time, elapsed_time; //for time animation
+	Uint32 start_time, stop_time; //for frame limit
 
 	SDL_Init(SDL_INIT_VIDEO);
-	atexit(SDL_Quit);
+	atexit(stop);
+
 	SDL_WM_SetCaption("SDL GL Application", NULL);
-	SDL_SetVideoMode(640, 480, 32, SDL_OPENGL);
+	SDL_SetVideoMode(width, height, 32, SDL_OPENGL);
+	//initFullScreen(&width,&height);
 
 	glMatrixMode( GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(70, (double) 640 / 480, 1, 1000);
+	gluPerspective(70, (double) width / height, 0.001, 1000);
 
-	Dessiner();
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
 
+	chargerTextures();
+
+	camera = new FreeFlyCamera(Vector3D(0, 0, 2));
+
+	last_time = SDL_GetTicks();
 	for (;;) {
-		SDL_WaitEvent(&event);
 
-		switch (event.type) {
-		case SDL_QUIT:
-			exit(0);
-			break;
+		start_time = SDL_GetTicks();
+
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+			case SDL_QUIT:
+				exit(0);
+				break;
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym) {
+				case SDLK_p:
+					takeScreenshot("test.bmp");
+					break;
+				case SDLK_ESCAPE:
+					exit(0);
+					break;
+				default:
+					camera->OnKeyboard(event.key);
+				}
+				break;
+			case SDL_KEYUP:
+				camera->OnKeyboard(event.key);
+				break;
+			case SDL_MOUSEMOTION:
+				camera->OnMouseMotion(event.motion);
+				break;
+			case SDL_MOUSEBUTTONUP:
+			case SDL_MOUSEBUTTONDOWN:
+				camera->OnMouseButton(event.button);
+				break;
+			}
 		}
-		Dessiner();
+
+		current_time = SDL_GetTicks();
+		elapsed_time = current_time - last_time;
+		last_time = current_time;
+
+		camera->animate(elapsed_time);
+
+		DrawGL();
+
+		stop_time = SDL_GetTicks();
+		if ((stop_time - last_time) < time_per_frame) {
+			SDL_Delay(time_per_frame - (stop_time - last_time));
+		}
+
 	}
 
 	return 0;
 }
 
-void Dessiner() {
-	glClear( GL_COLOR_BUFFER_BIT);
+void DrawGL() {
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode( GL_MODELVIEW);
 	glLoadIdentity();
 
-	gluLookAt(3, 4, 2, 0, 0, 0, 0, 0, 1);
+	camera->look();
 
-	glBegin(GL_QUADS);
-
-	glColor3ub(255, 0, 0); //face rouge
-	glVertex3d(1, 1, 1);
-	glVertex3d(1, 1, -1);
-	glVertex3d(-1, 1, -1);
-	glVertex3d(-1, 1, 1);
-	glEnd();
+	dessinerScene();
 
 	glFlush();
 	SDL_GL_SwapBuffers();
 }
+
