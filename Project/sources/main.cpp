@@ -9,7 +9,9 @@
 #include <SDL/SDL_timer.h>
 #include <SDL/SDL_video.h>
 #include <vector3d.h>
+#include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 #define FPS 50
 #define LARGEUR_FENETRE 640
@@ -24,6 +26,52 @@ void stop() {
 	SDL_Quit();
 }
 
+const void getScreenshotFilename(char * dest) {
+	static int nbScreenshot = 0;
+
+	sprintf(dest, "screenshot-%d", ++nbScreenshot);
+	strcat(dest, ".bmp");
+}
+
+void executeControl(const SDL_Event& event) {
+	switch (event.type) {
+	case SDL_QUIT:
+		exit(0);
+		break;
+	case SDL_KEYDOWN:
+		switch (event.key.keysym.sym) {
+		case SDLK_p:
+			char filename[255];
+			getScreenshotFilename(filename);
+			takeScreenshot(filename);
+			printf("Screenshot saved (%s).\n", filename);
+			break;
+		case SDLK_ESCAPE:
+			exit(0);
+			break;
+		default:
+			camera->OnKeyboard(event.key);
+		}
+		break;
+	case SDL_KEYUP:
+		camera->OnKeyboard(event.key);
+		break;
+	case SDL_MOUSEMOTION:
+		camera->OnMouseMotion(event.motion);
+		break;
+	case SDL_MOUSEBUTTONUP:
+	case SDL_MOUSEBUTTONDOWN:
+		camera->OnMouseButton(event.button);
+		break;
+	}
+}
+
+void pollAndExecuteAllEvents(SDL_Event& event) {
+	while (SDL_PollEvent(&event)) {
+		executeControl(event);
+	}
+}
+
 int main(int argc, char *argv[]) {
 	SDL_Event event;
 	const Uint32 time_per_frame = 1000 / FPS;
@@ -36,7 +84,7 @@ int main(int argc, char *argv[]) {
 	SDL_Init(SDL_INIT_VIDEO);
 	atexit(stop);
 
-	SDL_WM_SetCaption("SDL GL Application", NULL);
+	SDL_WM_SetCaption("Synthèse 3D - Projet 2015", NULL);
 	SDL_SetVideoMode(width, height, 32, SDL_OPENGL);
 	//initFullScreen(&width,&height);
 
@@ -53,38 +101,9 @@ int main(int argc, char *argv[]) {
 
 	last_time = SDL_GetTicks();
 	for (;;) {
-
 		start_time = SDL_GetTicks();
 
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-			case SDL_QUIT:
-				exit(0);
-				break;
-			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym) {
-				case SDLK_p:
-					takeScreenshot("test.bmp");
-					break;
-				case SDLK_ESCAPE:
-					exit(0);
-					break;
-				default:
-					camera->OnKeyboard(event.key);
-				}
-				break;
-			case SDL_KEYUP:
-				camera->OnKeyboard(event.key);
-				break;
-			case SDL_MOUSEMOTION:
-				camera->OnMouseMotion(event.motion);
-				break;
-			case SDL_MOUSEBUTTONUP:
-			case SDL_MOUSEBUTTONDOWN:
-				camera->OnMouseButton(event.button);
-				break;
-			}
-		}
+		pollAndExecuteAllEvents(event);
 
 		current_time = SDL_GetTicks();
 		elapsed_time = current_time - last_time;

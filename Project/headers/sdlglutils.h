@@ -4,6 +4,10 @@
 #include <GL/gl.h>
 #include <stddef.h>
 
+#ifndef RESSOURCES_FOLDER
+#define RESSOURCES_FOLDER "ressources/"
+#endif
+
 struct SDL_Cursor;
 
 #ifndef GL_CLAMP_TO_EDGE

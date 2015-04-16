@@ -1,4 +1,3 @@
-#include <GL/gl.h>
 #include <GL/glu.h>
 #include <sdlglutils.h>
 #include <stdlib.h>
@@ -20,7 +19,13 @@ GLuint loadTexture(const char * filename, bool useMipMap) {
 	SDL_Surface * gl_fliped_surface = NULL;
 	Uint32 rmask, gmask, bmask, amask;
 
-	picture_surface = IMG_Load(filename);
+	int size = strlen(RESSOURCES_FOLDER) + strlen(filename) + sizeof("\0");
+	char *path = (char *) malloc(size * sizeof(char));
+
+	strcpy(path, RESSOURCES_FOLDER);
+	strcat(path, filename);
+	picture_surface = IMG_Load(path);
+	free(path);
 
 	if (picture_surface == NULL)
 		return 0;
@@ -254,8 +259,9 @@ int XPMFromImage(const char * imagefile, const char * XPMfile) {
 			else
 				fprintf(xpm, "X");
 		}
-		for (x = image32bits->w; x < w; x++)
+		for (x = image32bits->w; x < (int) w; x++) {
 			fprintf(xpm, " ");
+		}
 		fprintf(xpm, "\",\n");
 	}
 

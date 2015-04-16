@@ -2,56 +2,64 @@
 #include <GL/glu.h>
 #include <sdlglutils.h>
 #include "scene.h"
+#include <cstdio>
+#include <unistd.h>
 
 void roquette();
 void caisse();
 
-void maisonde42();
-void jardindeDeadMaster();
+void maisonde42(GLUquadric* params);
+void pipe(GLUquadric* params);
 
 GLuint texture[19];
 
 void chargerTextures() {
-	texture[0] = loadTexture("../ressources/metal091.jpg");
+	texture[0] = loadTexture("metal091.jpg");
 	//pour la roquette
-	texture[1] = loadTexture("../ressources/rocket_motor.jpg");
-	texture[2] = loadTexture("../ressources/rocket_bottom.jpg");
-	texture[3] = loadTexture("../ressources/rocket_middle.jpg");
-	texture[4] = loadTexture("../ressources/rocket_top.jpg");
+	texture[1] = loadTexture("rocket_motor.jpg");
+	texture[2] = loadTexture("rocket_bottom.jpg");
+	texture[3] = loadTexture("rocket_middle.jpg");
+	texture[4] = loadTexture("rocket_top.jpg");
 	//autre texture
-	texture[5] = loadTexture("../ressources/concrete001.jpg");
-	texture[6] = loadTexture("../ressources/floor032.jpg");
-	texture[7] = loadTexture("../ressources/brick009.jpg");
-	texture[8] = loadTexture("../ressources/wood002.jpg");
-	texture[9] = loadTexture("../ressources/wood006.jpg");
+	texture[5] = loadTexture("concrete001.jpg");
+	texture[6] = loadTexture("floor032.jpg");
+	texture[7] = loadTexture("brick009.jpg");
+	texture[8] = loadTexture("wood002.jpg");
+	texture[9] = loadTexture("wood006.jpg");
 	//porte
-	texture[10] = loadTexture("../ressources/door009.jpg");
+	texture[10] = loadTexture("door009.jpg");
 	//pour les caisse
-	texture[11] = loadTexture("../ressources/crate03.jpg");
+	texture[11] = loadTexture("crate03.jpg");
 	//toit
-	texture[12] = loadTexture("../ressources/roof05.jpg");
+	texture[12] = loadTexture("roof05.jpg");
 	//fenetre
-	texture[13] = loadTexture("../ressources/window031_alpha.png");
+	texture[13] = loadTexture("window031_alpha.png");
 	//Herbe
-	texture[14] = loadTexture("../ressources/veg008.jpg");
+	texture[14] = loadTexture("veg008.jpg");
 	//Eau de la piscine
-	texture[15] = loadTexture("../ressources/eau.jpg");
+	texture[15] = loadTexture("eau.jpg");
 	// Dalle de la piscine
-	texture[16] = loadTexture("../ressources/floor006b.jpg");
+	texture[16] = loadTexture("floor006b.jpg");
 	// Fond du puit
-	texture[17] = loadTexture("../ressources/veg010.jpg");
+	texture[17] = loadTexture("veg010.jpg");
 	// puit
-	texture[18] = loadTexture("../ressources/brick077.jpg");
+	texture[18] = loadTexture("brick077.jpg");
 }
 
 void dessinerScene() {
-	maisonde42();
-	jardindeDeadMaster();
-}
-
-void maisonde42() {
 	GLUquadric* params;
 	params = gluNewQuadric();
+//	maisonde42(params);
+	params = gluNewQuadric();
+	glTranslatef(0, 10, 0);
+	pipe(params);
+	params = gluNewQuadric();
+	glTranslatef(10, 0, 0);
+	caisse();
+//	jardindeDeadMaster();
+}
+
+void maisonde42(GLUquadric* params) {
 	gluQuadricTexture(params, GL_TRUE);
 
 	// sol
@@ -357,7 +365,6 @@ void roquette() {
 }
 
 void caisse() {
-
 	glBindTexture(GL_TEXTURE_2D, texture[11]);
 
 	glBegin(GL_QUADS);
@@ -422,6 +429,21 @@ void caisse() {
 
 	glEnd();
 
+}
+
+void pipe(GLUquadric* params) {
+	// Puit partie ext�rieur
+	glBindTexture(GL_TEXTURE_2D, texture[18]);
+	gluCylinder(params, 2, 2, 7, 20, 1);
+
+	// Puit partie int�rieur
+	gluCylinder(params, 1.5, 1.5, 7, 20, 1);
+
+	// bordure haut du puit
+	glTranslated(0, 0, 7);
+	glBindTexture(GL_TEXTURE_2D, texture[18]);
+	gluDisk(params, 1.5, 2, 20, 1);
+	glTranslated(-4, -2, -1.985);
 }
 
 void jardindeDeadMaster() {
@@ -604,7 +626,7 @@ void jardindeDeadMaster() {
 
 	glPushMatrix();
 
-	//Sol ext�rieur partie devant picine > puit
+	//Sol exterieur partie devant picine > puit
 
 	glTranslated(1, 1, 0);
 
@@ -619,38 +641,6 @@ void jardindeDeadMaster() {
 	glTexCoord2i(0, 3);
 	glVertex3d(0, 6, 0);
 	glEnd();
-
-	// herbe autour du puit
-	glTranslated(-2, 8, -0.015); // petit fintage pour �vit� un bug d'affichage avec l'herbe
-
-	gluDisk(params, 2, 3, 20, 1);
-
-	glTranslated(0, 0, -5);
-
-	// Puit partie ext�rieur
-	glBindTexture(GL_TEXTURE_2D, texture[18]);
-
-	gluCylinder(params, 2, 2, 7, 20, 1);
-
-	// Puit partie int�rieur
-	gluCylinder(params, 1.5, 1.5, 7, 20, 1);
-
-	// Fond du puits
-
-	glBindTexture(GL_TEXTURE_2D, texture[17]);
-	gluDisk(params, 0, 2, 20, 1);
-
-	// Eau du puit
-
-	glTranslated(0, 0, 6); //TODO : virer, je l'ai laiss� pour pas tout casser ton dessin
-
-	// bordure haut du puit
-	glTranslated(0, 0, 1);
-
-	glBindTexture(GL_TEXTURE_2D, texture[18]);
-	gluDisk(params, 1.5, 2, 20, 1);
-
-	glTranslated(-4, -2, -1.985);
 
 	//herbe
 	glBindTexture(GL_TEXTURE_2D, texture[14]);
