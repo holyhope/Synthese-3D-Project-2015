@@ -1,0 +1,55 @@
+
+==================================================================================
+
+17 Fevrier 2013
+
+==================================================================================
+
+E.Incerti - incerti@univ-mlv.fr
+Universite de Paris-Est/Marne-la-Vallee
+
+==================================================================================
+
+Installation de la librairie g3x, sur-couche à OpenGl
+Exemples d'utilisation OpenGl/g3x
+
+==================================================================================
+
+CONTENU
+- ce fichier README
+
+- un script d'installation install.sh
+
+- un repertoire libg3x/
+	Ce repertoire contient 4 versions de la lib <g3x> : 
+  	- libg3x.32b.so   : lib. dynamique 32 bits pour utilisation dans code C    - compil gcc
+  	- libg3x.32b++.so : lib. dynamique 32 bits pour utilisation dans code C++  - compil g++
+  	- libg3x.64b.so   : lib. dynamique 64 bits pour utilisation dans code C    - compil gcc
+  	- libg3x.64b++.so : lib. dynamique 64 bits pour utilisation dans code C++  - compil g++
+
+  + 2 versions de la lib <mtracer> (traceur d'allocation) :
+  	- libmtracer.32b.so   : lib. dynamique 32 bits pour utilisation dans code C
+  	- libmtracer.64b.so   : lib. dynamique 64 bits pour utilisation dans code C
+  Le traceur memoire ne fonctionne pas avec g++ - Uniquement pour code C/gcc 
+  Son activation/desactivation est automatique via la variable DBG=yes/no du Makefile
+    	
+		- un repertoire include/  contient les fichiers d'en-tête de la lib. 
+
+- un repertoire code/
+		- un repertoire include/ (vide) 
+		- un repertoire src/ 2 codes d'exemple 3Ddemo.c / demo_scene.c
+		- un Makefile
+
+==================================================================================
+
+UTILISATION 
+- dans le repertoire courant, lancer le script d'installation : ./install.sh
+  ATTENTION : Ce script va modifier (ou creer) le fichier de configuration ~/.bashrc 
+    * Des variables d'environnement sont crees pour la compilation.
+      Ces variables sont definies par rapport au REPERTOIRE COURANT D'INSTALLATION
+      => en cas de deplacement du repertoire, il faut recommencer l'install.
+
+- le script descend dans le repertoire code/ , affiche les infos de compil. ("make ?")
+  et compile les exemples ("make" ou "make all") 
+  
+- Il doit produire les 2 executables 3Ddemo et demo_scene  
