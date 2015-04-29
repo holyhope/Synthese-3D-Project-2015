@@ -6,6 +6,8 @@
  */
 
 #include <advanced.hpp>
+#include <canonic.hpp>
+#include <matrix.hpp>
 #include <stdlib.h>
 #include <cmath>
 #include <cstdio>
@@ -13,24 +15,24 @@
 void AddTranslation(transformedObj* obj, float x, float y, float z) {
 	// matrice de la transformation
 	Matrix* t = allocNewMatrix();
-	SetMatPoint(t, 0, 3, x);
-	SetMatPoint(t, 1, 3, y);
-	SetMatPoint(t, 2, 3, z);
+	setMatPoint(t, 0, 3, x);
+	setMatPoint(t, 1, 3, y);
+	setMatPoint(t, 2, 3, z);
 
 	Matrix* newMat = allocNewMatrix();
-	MatMulMat(obj->transf, t, newMat);
+	matMulMat(obj->transf, t, newMat);
 
 	Matrix* old = obj->transf;
 	obj->transf = newMat;
 
 	// matrice inverse
 	Matrix* inv = allocNewMatrix();
-	SetMatPoint(inv, 0, 3, -x);
-	SetMatPoint(inv, 1, 3, -y);
-	SetMatPoint(inv, 2, 3, -z);
+	setMatPoint(inv, 0, 3, -x);
+	setMatPoint(inv, 1, 3, -y);
+	setMatPoint(inv, 2, 3, -z);
 
 	Matrix* newInv = allocNewMatrix();
-	MatMulMat(inv, obj->inv, newInv);
+	matMulMat(inv, obj->inv, newInv);
 
 	Matrix* oldInv = obj->inv;
 	obj->inv = newInv;
@@ -49,24 +51,24 @@ void AddHomo(transformedObj* obj, float rx, float ry, float rz) {
 	}
 	// matrice de la transformation
 	Matrix* h = allocNewMatrix();
-	SetMatPoint(h, 0, 0, rx);
-	SetMatPoint(h, 1, 1, ry);
-	SetMatPoint(h, 2, 2, rz);
+	setMatPoint(h, 0, 0, rx);
+	setMatPoint(h, 1, 1, ry);
+	setMatPoint(h, 2, 2, rz);
 
 	Matrix* newMat = allocNewMatrix();
-	MatMulMat(obj->transf, h, newMat);
+	matMulMat(obj->transf, h, newMat);
 
 	Matrix* old = obj->transf;
 	obj->transf = newMat;
 
 	// matrice inverse
 	Matrix* inv = allocNewMatrix();
-	SetMatPoint(inv, 0, 0, 1. / rx);
-	SetMatPoint(inv, 1, 1, 1. / ry);
-	SetMatPoint(inv, 2, 2, 1. / rz);
+	setMatPoint(inv, 0, 0, 1. / rx);
+	setMatPoint(inv, 1, 1, 1. / ry);
+	setMatPoint(inv, 2, 2, 1. / rz);
 
 	Matrix* newInv = allocNewMatrix();
-	MatMulMat(inv, obj->inv, newInv);
+	matMulMat(inv, obj->inv, newInv);
 
 	Matrix* oldInv = obj->inv;
 	obj->inv = newInv;
@@ -80,26 +82,26 @@ void AddHomo(transformedObj* obj, float rx, float ry, float rz) {
 void AddRotationZ(transformedObj* obj, float theta) {
 	// matrice de la transformation
 	Matrix* rz = allocNewMatrix();
-	SetMatPoint(rz, 0, 0, cos(theta));
-	SetMatPoint(rz, 0, 1, sin(theta));
-	SetMatPoint(rz, 1, 0, -sin(theta));
-	SetMatPoint(rz, 1, 1, cos(theta));
+	setMatPoint(rz, 0, 0, cos(theta));
+	setMatPoint(rz, 0, 1, sin(theta));
+	setMatPoint(rz, 1, 0, -sin(theta));
+	setMatPoint(rz, 1, 1, cos(theta));
 
 	Matrix* newMat = allocNewMatrix();
-	MatMulMat(obj->transf, rz, newMat);
+	matMulMat(obj->transf, rz, newMat);
 
 	Matrix* old = obj->transf;
 	obj->transf = newMat;
 
 	// matrice inverse
 	Matrix* inv = allocNewMatrix();
-	SetMatPoint(inv, 0, 0, cos(-theta));
-	SetMatPoint(inv, 0, 1, sin(-theta));
-	SetMatPoint(inv, 1, 0, -sin(-theta));
-	SetMatPoint(inv, 1, 1, cos(-theta));
+	setMatPoint(inv, 0, 0, cos(-theta));
+	setMatPoint(inv, 0, 1, sin(-theta));
+	setMatPoint(inv, 1, 0, -sin(-theta));
+	setMatPoint(inv, 1, 1, cos(-theta));
 
 	Matrix* newInv = allocNewMatrix();
-	MatMulMat(inv, obj->inv, newInv);
+	matMulMat(inv, obj->inv, newInv);
 
 	Matrix* oldInv = obj->inv;
 	obj->inv = newInv;
@@ -113,26 +115,26 @@ void AddRotationZ(transformedObj* obj, float theta) {
 void AddRotationX(transformedObj* obj, float theta) {
 	// matrice de la transformation
 	Matrix* rx = allocNewMatrix();
-	SetMatPoint(rx, 1, 1, cos(theta));
-	SetMatPoint(rx, 1, 2, sin(theta));
-	SetMatPoint(rx, 2, 1, -sin(theta));
-	SetMatPoint(rx, 2, 2, cos(theta));
+	setMatPoint(rx, 1, 1, cos(theta));
+	setMatPoint(rx, 1, 2, sin(theta));
+	setMatPoint(rx, 2, 1, -sin(theta));
+	setMatPoint(rx, 2, 2, cos(theta));
 
 	Matrix* newMat = allocNewMatrix();
-	MatMulMat(obj->transf, rx, newMat);
+	matMulMat(obj->transf, rx, newMat);
 
 	Matrix* old = obj->transf;
 	obj->transf = newMat;
 
 	// matrice inverse
 	Matrix* inv = allocNewMatrix();
-	SetMatPoint(inv, 1, 1, cos(-theta));
-	SetMatPoint(inv, 1, 2, sin(-theta));
-	SetMatPoint(inv, 2, 1, -sin(-theta));
-	SetMatPoint(inv, 2, 2, cos(-theta));
+	setMatPoint(inv, 1, 1, cos(-theta));
+	setMatPoint(inv, 1, 2, sin(-theta));
+	setMatPoint(inv, 2, 1, -sin(-theta));
+	setMatPoint(inv, 2, 2, cos(-theta));
 
 	Matrix* newInv = allocNewMatrix();
-	MatMulMat(inv, obj->inv, newInv);
+	matMulMat(inv, obj->inv, newInv);
 
 	Matrix* oldInv = obj->inv;
 	obj->inv = newInv;
@@ -146,26 +148,26 @@ void AddRotationX(transformedObj* obj, float theta) {
 void AddRotationY(transformedObj* obj, float theta) {
 	// matrice de la transformation
 	Matrix* ry = allocNewMatrix();
-	SetMatPoint(ry, 0, 0, cos(theta));
-	SetMatPoint(ry, 0, 2, sin(theta));
-	SetMatPoint(ry, 2, 0, -sin(theta));
-	SetMatPoint(ry, 2, 2, cos(theta));
+	setMatPoint(ry, 0, 0, cos(theta));
+	setMatPoint(ry, 0, 2, sin(theta));
+	setMatPoint(ry, 2, 0, -sin(theta));
+	setMatPoint(ry, 2, 2, cos(theta));
 
 	Matrix* newMat = allocNewMatrix();
-	MatMulMat(obj->transf, ry, newMat);
+	matMulMat(obj->transf, ry, newMat);
 
 	Matrix* old = obj->transf;
 	obj->transf = newMat;
 
 	// matrice inverse
 	Matrix* inv = allocNewMatrix();
-	SetMatPoint(inv, 0, 0, cos(-theta));
-	SetMatPoint(inv, 0, 2, sin(-theta));
-	SetMatPoint(inv, 2, 0, -sin(-theta));
-	SetMatPoint(inv, 2, 2, cos(-theta));
+	setMatPoint(inv, 0, 0, cos(-theta));
+	setMatPoint(inv, 0, 2, sin(-theta));
+	setMatPoint(inv, 2, 0, -sin(-theta));
+	setMatPoint(inv, 2, 2, cos(-theta));
 
 	Matrix* newInv = allocNewMatrix();
-	MatMulMat(inv, obj->inv, newInv);
+	matMulMat(inv, obj->inv, newInv);
 
 	Matrix* oldInv = obj->inv;
 	obj->inv = newInv;
@@ -237,7 +239,8 @@ void SetColor(transformedObj* obj, float r, float g, float b) {
 	obj->color[2] = b;
 }
 
-CSGTree* NewCSGTree(transformedObj* obj, int type, CSGTree* fg, CSGTree* fd) {
+CSGTree* allocCSGTree(transformedObj* obj, TreeType type, CSGTree* fg,
+		CSGTree* fd) {
 	CSGTree* tree = (CSGTree*) malloc(sizeof(CSGTree));
 	tree->type = type;
 	tree->obj = obj;

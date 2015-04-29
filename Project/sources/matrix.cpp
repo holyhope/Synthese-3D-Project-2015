@@ -27,7 +27,7 @@ void freeNewMatrix(Matrix *matrix) {
 	free(matrix);
 }
 
-Point* NewPoint(float x, float y, float z) {
+Point* allocPoint(float x, float y, float z) {
 	Point* p = (Point*) malloc(sizeof(Point));
 	p->points[0] = x;
 	p->points[1] = y;
@@ -36,17 +36,17 @@ Point* NewPoint(float x, float y, float z) {
 	return p;
 }
 
-void SetPoints(Point* p, float x, float y, float z) {
+void setPoints(Point* p, float x, float y, float z) {
 	p->points[0] = x;
 	p->points[1] = y;
 	p->points[2] = z;
 }
 
-void SetMatPoint(Matrix* mat, int row, int col, float val) {
+void setMatPoint(Matrix* mat, int row, int col, float val) {
 	mat->points[row][col] = val;
 }
 
-void MatMulPoint(Matrix* mat, Point* p, Point* res) {
+void matMulPoint(Matrix* mat, Point* p, Point* res) {
 	for (int i = 0; i < mat->size; i++) {
 		res->points[i] = 0.;
 		for (int j = 0; j < mat->size; j++) {
@@ -55,7 +55,7 @@ void MatMulPoint(Matrix* mat, Point* p, Point* res) {
 	}
 }
 
-void MatMulMat(Matrix* mat, Matrix* mat2, Matrix* res) {
+void matMulMat(Matrix* mat, Matrix* mat2, Matrix* res) {
 	float sum = 0;
 	for (int i = 0; i < mat->size; i++) {
 		for (int j = 0; j < mat->size; j++) {

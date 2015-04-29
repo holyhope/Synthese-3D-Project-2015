@@ -36,7 +36,6 @@ ObjCanonique* getCanonicToroid();
 bool isInCube(float x, float y, float z);
 ObjCanonique* getCanonicCube();
 
-
 #ifndef NB_VERTICES_ADDED
 #undef NB_VERTICES
 #endif

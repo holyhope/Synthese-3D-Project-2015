@@ -20,12 +20,12 @@ struct Point {
 };
 
 Matrix* allocNewMatrix();
-void freeNewMatrix(Matrix *matrix);
+void freeNewMatrix(Matrix*);
 
-Point* NewPoint(float x, float y, float z);
-void SetPoints(Point* p, float x, float y, float z);
-void SetMatPoint(Matrix* mat, int row, int col, float val);
-void MatMulPoint(Matrix* mat, Point* p, Point* res);
-void MatMulMat(Matrix* mat, Matrix* mat2, Matrix* res);
+Point* allocPoint(float x, float y, float z);
+void setPoints(Point* p, float x, float y, float z);
+void setMatPoint(Matrix* mat, int row, int col, float val);
+void matMulPoint(Matrix* mat, Point* p, Point* res);
+void matMulMat(Matrix* mat, Matrix* mat2, Matrix* res);
 
 #endif /* MATRIX_HPP_ */

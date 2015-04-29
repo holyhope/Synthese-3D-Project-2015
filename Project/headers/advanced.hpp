@@ -8,22 +8,26 @@
 #ifndef ADVANCED_HPP_
 #define ADVANCED_HPP_
 
-#include <matrix.hpp>
-#include <canonic.hpp>
+struct Matrix;
+struct ObjCanonique;
 
-struct transformedObj {
+typedef enum {
+	NONE, UNION, INTER, SUBSTRACT
+} TreeType;
+
+typedef struct {
 	ObjCanonique* oc;
 	Matrix* transf;
 	Matrix* inv;
 	float color[3];
-};
+} transformedObj;
 
-struct CSGTree {
-	int type;
+typedef struct struct_CSGTree {
+	TreeType type;
 	transformedObj* obj;
-	CSGTree* fg;
-	CSGTree* fd;
-};
+	struct_CSGTree* fg;
+	struct_CSGTree* fd;
+} CSGTree;
 
 void AddTranslation(transformedObj* obj, float x, float y, float z);
 void AddHomo(transformedObj* obj, float rx, float ry, float rz);
@@ -39,6 +43,7 @@ transformedObj* Cylindre();
 
 void SetColor(transformedObj* obj, float r, float g, float b);
 
-CSGTree* NewCSGTree(transformedObj* obj, int type, CSGTree* fg, CSGTree* fd);
+CSGTree* allocCSGTree(transformedObj* obj, TreeType type, CSGTree* fg,
+		CSGTree* fd);
 
 #endif /* ADVANCED_HPP_ */

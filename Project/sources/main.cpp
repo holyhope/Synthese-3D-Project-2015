@@ -93,15 +93,7 @@ void display(void) {
 
 	displayCamera();
 
-	// Display all objects
-	for (int i = 0; i < objectToDisplay.number; i++) {
-		drawObj(objectToDisplay.objects[i]);
-	}
-
-	// Display all tree (combined objects)
-	for (int i = 0; i < treeToDisplay.number; i++) {
-		drawCSGTree(treeToDisplay.trees[i]);
-	}
+	displayAll();
 
 	glutSwapBuffers();
 	addCameraZRot(1);
@@ -112,28 +104,16 @@ void setup() {
 }
 
 void init() {
-	objectToDisplay.number = 0;
-
 	initTools();
+	initDisplay();
 	initCamera();
 	initCanonicObjects();
-}
-
-void addObjectToDisplay(transformedObj *obj) {
-	objectToDisplay.objects[objectToDisplay.number++] = obj;
-}
-
-void addTreeToDisplay(CSGTree *obj) {
-	treeToDisplay.trees[treeToDisplay.number++] = obj;
 }
 
 int main(int argc, char* argv[]) {
 	init();
 
 // construction et transformation
-	transformedObj* cylindre;
-	transformedObj* tore;
-	transformedObj* sphere;
 
 // Cube canonique en (4,2)
 	transformedObj* cubeCanonique1;
@@ -164,6 +144,7 @@ int main(int argc, char* argv[]) {
 //AddRotationX(cube, 60.);
 //AddHomo(cube, .5, .5, .5);
 
+	transformedObj* tore;
 	tore = Tore();
 	SetColor(tore, 1., 1., .0);
 	AddTranslation(tore, 0., 0., 1.);
@@ -174,27 +155,45 @@ int main(int argc, char* argv[]) {
 	SetColor(coneCanonique1, 0., 1., 1.);
 //AddRotationZ(cone, 60.);
 //AddRotationY(cone, 30.);
-	AddTranslation(coneCanonique1, 0., 0., -.5);
+	//AddTranslation(coneCanonique1, 0., 0., -.5);
 
-	sphere = Sphere();
-	SetColor(sphere, .0, 1., .0);
-	AddTranslation(sphere, 0., 0., -.5);
-	AddHomo(sphere, .6, .6, .6);
-
+	transformedObj* cylindre;
 	cylindre = Cylindre();
 	SetColor(cylindre, .0, .0, 1.);
 
-	CSGTree* tree = NewCSGTree(NULL, 1,
-			NewCSGTree(cubeCanonique1, 0, NULL, NULL),
-			NewCSGTree(tore, 0, NULL, NULL));
-	CSGTree* tree2 = NewCSGTree(NULL, 2, NewCSGTree(sphere, 0, NULL, NULL),
-			NewCSGTree(coneCanonique1, 0, NULL, NULL));
-	CSGTree* tree3 = NewCSGTree(NULL, 3, NewCSGTree(cylindre, 0, NULL, NULL),
-			NewCSGTree(sphere, 0, NULL, NULL));
+	transformedObj* sphere;
+	sphere = Sphere();
+	SetColor(sphere, .0, 1., .0);
+	AddTranslation(sphere, 0., 0., -.5);
+
+	transformedObj* sphere2;
+	sphere2 = Sphere();
+	AddTranslation(sphere2, 0., .5, 0.);
+	SetColor(sphere2, .0, 1., 0.);
+
+	transformedObj* sphere3;
+	sphere3 = Sphere();
+	AddTranslation(sphere3, 0., -.5, 0.);
+	SetColor(sphere3, 1., 0., 0.);
+
+	CSGTree* tree = allocCSGTree(NULL, UNION,
+			allocCSGTree(cubeCanonique1, NONE, NULL, NULL),
+			allocCSGTree(tore, NONE, NULL, NULL));
+	CSGTree* tree2 = allocCSGTree(NULL, INTER,
+			allocCSGTree(sphere, NONE, NULL, NULL),
+			allocCSGTree(coneCanonique1, NONE, NULL, NULL));
+	CSGTree* tree3 = allocCSGTree(NULL, SUBSTRACT,
+			allocCSGTree(cylindre, NONE, NULL, NULL),
+			allocCSGTree(sphere, NONE, NULL, NULL));
+	CSGTree* tree4 = allocCSGTree(NULL, UNION, allocCSGTree(sphere3, NONE,
+	NULL, NULL), allocCSGTree(sphere, NONE, NULL, NULL));
+	CSGTree* tree5 = allocCSGTree(sphere2, NONE, NULL, NULL);
+	CSGTree* tree6 = allocCSGTree(NULL, SUBSTRACT, tree4, tree5);
 
 	addTreeToDisplay(tree);
-	addTreeToDisplay(tree2);
-	addTreeToDisplay(tree3);
+//	addTreeToDisplay(tree2);
+//	addTreeToDisplay(tree3);
+	addTreeToDisplay(tree6);
 
 // glut
 	glutInit(&argc, argv);

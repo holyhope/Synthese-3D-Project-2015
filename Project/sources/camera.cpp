@@ -5,8 +5,8 @@
  *      Author: pperonne
  */
 
-#include <GL/gl.h>
 #include <camera.hpp>
+#include <GL/gl.h>
 #include <math.h>
 
 static long int lastx, lasty;
