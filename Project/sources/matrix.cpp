@@ -27,6 +27,10 @@ void freeNewMatrix(Matrix *matrix) {
 	free(matrix);
 }
 
+void freePoint(Point *point) {
+	free(point);
+}
+
 Point* allocPoint(float x, float y, float z) {
 	Point* p = (Point*) malloc(sizeof(Point));
 	p->points[0] = x;

@@ -52,22 +52,6 @@ void mouseMovement(int x, int y) {
 	updateMouseCoords(x, y);
 }
 
-void mouseFunction(int button, int state, int x, int y) {
-	if (button != GLUT_LEFT_BUTTON) {
-		return;
-	}
-	switch (state) {
-	case GLUT_UP:
-		mouseMovementPassive(x, y);
-		break;
-	case GLUT_DOWN:
-		mouseMovement(x, y);
-		break;
-	default:
-		return;
-	}
-}
-
 void processSpecialKeys(int key, int xx, int yy) {
 	switch (key) {
 	case GLUT_KEY_LEFT:
@@ -81,6 +65,9 @@ void processSpecialKeys(int key, int xx, int yy) {
 		break;
 	case GLUT_KEY_DOWN:
 		addCameraXRot(-2);
+		break;
+	case GLUT_KEY_F1:
+		changeDisplayMod();
 		break;
 	}
 }
@@ -105,97 +92,159 @@ void setup() {
 
 void init() {
 	initTools();
-	initDisplay();
 	initCamera();
+	initDisplay();
 	initCanonicObjects();
+
+	addCameraZPos(8);
+}
+
+void createCanonicShapes() {
+	TransformedObject *object1;
+
+	// Cube canonique en (4,2)
+	object1 = Cube();
+	addTranslation(object1, 4, 0, 0);
+	addObjectToDisplay(object1);
+
+	// Cone canonique en (2,2)
+	object1 = Cone();
+	addTranslation(object1, 2, 0, 0);
+	addObjectToDisplay(object1);
+	addRotationX(object1, M_PI / 2);
+
+	// Tore canonique en (-2,2)
+	object1 = Sphere();
+	addTranslation(object1, 0, 0, 0);
+	addObjectToDisplay(object1);
+
+	// Tore canonique en (-2,2)
+	object1 = Tore();
+	addTranslation(object1, -2, 0, 0);
+	addObjectToDisplay(object1);
+
+	// Tore canonique en (-4,2)
+	object1 = Cylindre();
+	addTranslation(object1, -4, 0, 0);
+	addObjectToDisplay(object1);
+}
+
+void createComposedShapesTmp(TreeType type, float y) {
+	TransformedObject *object1;
+	TransformedObject *object2;
+	CSGTree* tree;
+
+	//*******************************//
+
+	object1 = Cube();
+	addTranslation(object1, 5, y, 0);
+	addHomothety(object1, 3, 1, 1);
+	setColor(object1, 1, 0, 0);
+
+	object2 = Cylindre();
+	setColor(object2, 0, 0, 1);
+	addTranslation(object2, 5, y, 0);
+	addHomothety(object2, 1, 2, .9);
+
+	tree = allocCSGTree(NULL, type, allocCSGTree(object1, NONE, NULL, NULL),
+			allocCSGTree(object2, NONE, NULL, NULL));
+
+	addTreeToDisplay(tree);
+
+	//*******************************//
+
+	object1 = Cube();
+	addTranslation(object1, 2, y, 0);
+	setColor(object1, 1, 0, 1);
+
+	object2 = Sphere();
+	setColor(object2, 1, 1, 0);
+	addTranslation(object2, 2, y - 1, 0);
+
+	tree = allocCSGTree(NULL, type, allocCSGTree(object1, NONE, NULL, NULL),
+			allocCSGTree(object2, NONE, NULL, NULL));
+
+	addTreeToDisplay(tree);
+
+	//*******************************//
+
+	object1 = Tore();
+	addTranslation(object1, 0, y, 0);
+	setColor(object1, 1, 0, 1);
+	addRotationZ(object1, M_PI / 2);
+
+	object2 = Sphere();
+	setColor(object2, 0, 0, 1);
+	addTranslation(object2, 0, y, 0);
+	addHomothety(object2, .7, .4, .7);
+
+	tree = allocCSGTree(NULL, type, allocCSGTree(object1, NONE, NULL, NULL),
+			allocCSGTree(object2, NONE, NULL, NULL));
+
+	addTreeToDisplay(tree);
+
+	//*******************************//
+
+	object1 = Tore();
+	addTranslation(object1, -2, y, 0);
+	addRotationZ(object1, M_PI / 2);
+
+	object2 = Tore();
+	addTranslation(object2, -2, y, 0);
+	addRotationY(object2, M_PI / 2);
+
+	tree = allocCSGTree(NULL, type, allocCSGTree(object1, NONE, NULL, NULL),
+			allocCSGTree(object2, NONE, NULL, NULL));
+
+	addTreeToDisplay(tree);
+
+	//*******************************//
+
+	object1 = Tore();
+	addTranslation(object1, -2, y, 0);
+	addRotationZ(object1, M_PI / 2);
+
+	object2 = Tore();
+	addTranslation(object2, -2, y, 0);
+	addRotationY(object2, M_PI / 2);
+
+	tree = allocCSGTree(NULL, type, allocCSGTree(object1, NONE, NULL, NULL),
+			allocCSGTree(object2, NONE, NULL, NULL));
+
+	addTreeToDisplay(tree);
+
+	//*******************************//
+
+	object1 = Cube();
+	addTranslation(object1, -4, y, 0);
+	addRotationX(object1, M_PI / 4);
+	addRotationZ(object1, M_PI / 4);
+
+	object2 = Tore();
+	addTranslation(object2, -4, y, 0);
+
+	tree = allocCSGTree(NULL, type, allocCSGTree(object1, NONE, NULL, NULL),
+			allocCSGTree(object2, NONE, NULL, NULL));
+
+	addTreeToDisplay(tree);
+}
+
+void createComposedShapes() {
+	static const float step = 2;
+	float y = 0;
+	createComposedShapesTmp(UNION, y -= step);
+	createComposedShapesTmp(INTER, y -= step);
+	createComposedShapesTmp(SUBSTRACT, y -= step);
 }
 
 int main(int argc, char* argv[]) {
 	init();
 
-// construction et transformation
+	// construction et transformation
+	createCanonicShapes();
+	createComposedShapes();
 
-// Cube canonique en (4,2)
-	transformedObj* cubeCanonique1;
-	cubeCanonique1 = Cube();
-	AddTranslation(cubeCanonique1, 4., 2., 0.);
-	addObjectToDisplay(cubeCanonique1);
-
-// Cone canonique en (2,2)
-	transformedObj* coneCanonique1;
-	coneCanonique1 = Cone();
-	AddTranslation(coneCanonique1, 2., 2., 0.);
-	addObjectToDisplay(coneCanonique1);
-
-	// Cone canonique penché en (0,2)
-	transformedObj* coneCanonique2;
-	coneCanonique2 = Cone();
-	AddTranslation(coneCanonique2, 2., 2., 0.);
-	AddRotationX(coneCanonique2, 60.);
-	addObjectToDisplay(coneCanonique2);
-
-	// Tore canonique en (-2,2)
-	transformedObj* toreCanonique1;
-	toreCanonique1 = Tore();
-	AddTranslation(toreCanonique1, -2., 2., 0.);
-	addObjectToDisplay(toreCanonique1);
-
-//AddRotationZ(cubeCanonique1, 60.);
-//AddRotationX(cube, 60.);
-//AddHomo(cube, .5, .5, .5);
-
-	transformedObj* tore;
-	tore = Tore();
-	SetColor(tore, 1., 1., .0);
-	AddTranslation(tore, 0., 0., 1.);
-//AddRotationX(tore, 90.);
-//AddHomo(tore, 1.3,1.3,1.3);
-
-	coneCanonique1 = Cone();
-	SetColor(coneCanonique1, 0., 1., 1.);
-//AddRotationZ(cone, 60.);
-//AddRotationY(cone, 30.);
-	//AddTranslation(coneCanonique1, 0., 0., -.5);
-
-	transformedObj* cylindre;
-	cylindre = Cylindre();
-	SetColor(cylindre, .0, .0, 1.);
-
-	transformedObj* sphere;
-	sphere = Sphere();
-	SetColor(sphere, .0, 1., .0);
-	AddTranslation(sphere, 0., 0., -.5);
-
-	transformedObj* sphere2;
-	sphere2 = Sphere();
-	AddTranslation(sphere2, 0., .5, 0.);
-	SetColor(sphere2, .0, 1., 0.);
-
-	transformedObj* sphere3;
-	sphere3 = Sphere();
-	AddTranslation(sphere3, 0., -.5, 0.);
-	SetColor(sphere3, 1., 0., 0.);
-
-	CSGTree* tree = allocCSGTree(NULL, UNION,
-			allocCSGTree(cubeCanonique1, NONE, NULL, NULL),
-			allocCSGTree(tore, NONE, NULL, NULL));
-	CSGTree* tree2 = allocCSGTree(NULL, INTER,
-			allocCSGTree(sphere, NONE, NULL, NULL),
-			allocCSGTree(coneCanonique1, NONE, NULL, NULL));
-	CSGTree* tree3 = allocCSGTree(NULL, SUBSTRACT,
-			allocCSGTree(cylindre, NONE, NULL, NULL),
-			allocCSGTree(sphere, NONE, NULL, NULL));
-	CSGTree* tree4 = allocCSGTree(NULL, UNION, allocCSGTree(sphere3, NONE,
-	NULL, NULL), allocCSGTree(sphere, NONE, NULL, NULL));
-	CSGTree* tree5 = allocCSGTree(sphere2, NONE, NULL, NULL);
-	CSGTree* tree6 = allocCSGTree(NULL, SUBSTRACT, tree4, tree5);
-
-	addTreeToDisplay(tree);
-//	addTreeToDisplay(tree2);
-//	addTreeToDisplay(tree3);
-	addTreeToDisplay(tree6);
-
-// glut
+	// glut
 	glutInit(&argc, argv);
 	glutInitWindowSize(640, 480);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);

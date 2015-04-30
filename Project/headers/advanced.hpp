@@ -8,42 +8,43 @@
 #ifndef ADVANCED_HPP_
 #define ADVANCED_HPP_
 
-struct Matrix;
-struct ObjCanonique;
-
-typedef enum {
-	NONE, UNION, INTER, SUBSTRACT
-} TreeType;
+#include <matrix.hpp>
+#include <canonic.hpp>
 
 typedef struct {
 	ObjCanonique* oc;
 	Matrix* transf;
 	Matrix* inv;
 	float color[3];
-} transformedObj;
+} TransformedObject;
+
+typedef enum {
+	NONE, UNION, INTER, SUBSTRACT
+} TreeType;
 
 typedef struct struct_CSGTree {
 	TreeType type;
-	transformedObj* obj;
+	TransformedObject* obj;
 	struct_CSGTree* fg;
 	struct_CSGTree* fd;
 } CSGTree;
 
-void AddTranslation(transformedObj* obj, float x, float y, float z);
-void AddHomo(transformedObj* obj, float rx, float ry, float rz);
-void AddRotationZ(transformedObj* obj, float theta);
-void AddRotationX(transformedObj* obj, float theta);
-void AddRotationY(transformedObj* obj, float theta);
+void addTranslation(TransformedObject* obj, float x, float y, float z);
+void addHomothety(TransformedObject* obj, float rx, float ry, float rz);
+void addRotationZ(TransformedObject* obj, float theta);
+void addRotationX(TransformedObject* obj, float theta);
+void addRotationY(TransformedObject* obj, float theta);
 
-transformedObj* Cube();
-transformedObj* Tore();
-transformedObj* Cone();
-transformedObj* Sphere();
-transformedObj* Cylindre();
+TransformedObject* Cube();
+TransformedObject* Tore();
+TransformedObject* Cone();
+TransformedObject* Sphere();
+TransformedObject* Cylindre();
+void freeTransformedObject(TransformedObject *object);
 
-void SetColor(transformedObj* obj, float r, float g, float b);
+void setColor(TransformedObject* obj, float r, float g, float b);
 
-CSGTree* allocCSGTree(transformedObj* obj, TreeType type, CSGTree* fg,
+CSGTree* allocCSGTree(TransformedObject* obj, TreeType type, CSGTree* fg,
 		CSGTree* fd);
 
 #endif /* ADVANCED_HPP_ */

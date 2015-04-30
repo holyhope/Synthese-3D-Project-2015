@@ -8,16 +8,13 @@
 #ifndef CANONIC_HPP_
 #define CANONIC_HPP_
 
-#ifndef NB_VERTICES
-#define NB_VERTICES_ADDED
-#define NB_VERTICES 1000000
-#endif
+#define NB_VERTICES 100000
 
-struct ObjCanonique {
+typedef struct {
 	int nb_vertices;
 	float vertices[NB_VERTICES][3];
 	bool (*isIn)(float, float, float);
-};
+} ObjCanonique;
 
 void initCanonicObjects();
 
@@ -35,10 +32,5 @@ ObjCanonique* getCanonicToroid();
 
 bool isInCube(float x, float y, float z);
 ObjCanonique* getCanonicCube();
-
-#ifndef NB_VERTICES_ADDED
-#undef NB_VERTICES
-#endif
-#undef NB_VERTICES_ADDED
 
 #endif /* CANONIC_HPP_ */

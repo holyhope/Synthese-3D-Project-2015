@@ -9,10 +9,13 @@
 #include <canonic.hpp>
 #include <matrix.hpp>
 #include <stdlib.h>
+#include <tools.hpp>
 #include <cmath>
 #include <cstdio>
 
-void AddTranslation(transformedObj* obj, float x, float y, float z) {
+#define COLOR_COEFF .8
+
+void addTranslation(TransformedObject* obj, float x, float y, float z) {
 	// matrice de la transformation
 	Matrix* t = allocNewMatrix();
 	setMatPoint(t, 0, 3, x);
@@ -43,12 +46,10 @@ void AddTranslation(transformedObj* obj, float x, float y, float z) {
 	freeNewMatrix(t);
 }
 
-void AddHomo(transformedObj* obj, float rx, float ry, float rz) {
-	if (rx <= 0. || ry <= 0. || rz <= 0.) {
-		fprintf(stderr,
-				"Les valeurs de l'homothétie ne peuvent être inférieures ou égalles à 0.\n");
-		return;
-	}
+/**
+ * rx > 0, ry > 0, rz > 0
+ */
+void addHomothety(TransformedObject* obj, float rx, float ry, float rz) {
 	// matrice de la transformation
 	Matrix* h = allocNewMatrix();
 	setMatPoint(h, 0, 0, rx);
@@ -73,13 +74,13 @@ void AddHomo(transformedObj* obj, float rx, float ry, float rz) {
 	Matrix* oldInv = obj->inv;
 	obj->inv = newInv;
 
-	free(oldInv);
-	free(inv);
-	free(old);
-	free(h);
+	freeNewMatrix(oldInv);
+	freeNewMatrix(inv);
+	freeNewMatrix(old);
+	freeNewMatrix(h);
 }
 
-void AddRotationZ(transformedObj* obj, float theta) {
+void addRotationZ(TransformedObject* obj, float theta) {
 	// matrice de la transformation
 	Matrix* rz = allocNewMatrix();
 	setMatPoint(rz, 0, 0, cos(theta));
@@ -106,13 +107,13 @@ void AddRotationZ(transformedObj* obj, float theta) {
 	Matrix* oldInv = obj->inv;
 	obj->inv = newInv;
 
-	free(oldInv);
-	free(inv);
-	free(old);
-	free(rz);
+	freeNewMatrix(oldInv);
+	freeNewMatrix(inv);
+	freeNewMatrix(old);
+	freeNewMatrix(rz);
 }
 
-void AddRotationX(transformedObj* obj, float theta) {
+void addRotationX(TransformedObject* obj, float theta) {
 	// matrice de la transformation
 	Matrix* rx = allocNewMatrix();
 	setMatPoint(rx, 1, 1, cos(theta));
@@ -139,13 +140,13 @@ void AddRotationX(transformedObj* obj, float theta) {
 	Matrix* oldInv = obj->inv;
 	obj->inv = newInv;
 
-	free(oldInv);
-	free(inv);
-	free(old);
-	free(rx);
+	freeNewMatrix(oldInv);
+	freeNewMatrix(inv);
+	freeNewMatrix(old);
+	freeNewMatrix(rx);
 }
 
-void AddRotationY(transformedObj* obj, float theta) {
+void addRotationY(TransformedObject* obj, float theta) {
 	// matrice de la transformation
 	Matrix* ry = allocNewMatrix();
 	setMatPoint(ry, 0, 0, cos(theta));
@@ -172,74 +173,83 @@ void AddRotationY(transformedObj* obj, float theta) {
 	Matrix* oldInv = obj->inv;
 	obj->inv = newInv;
 
-	free(oldInv);
-	free(inv);
-	free(old);
-	free(ry);
+	freeNewMatrix(oldInv);
+	freeNewMatrix(inv);
+	freeNewMatrix(old);
+	freeNewMatrix(ry);
 }
 
-transformedObj* Cube() {
-	transformedObj* cube = (transformedObj*) malloc(sizeof(transformedObj));
+void freeTransformedObject(TransformedObject *object) {
+	free(object);
+}
+
+TransformedObject* Cube() {
+	TransformedObject* cube = (TransformedObject*) malloc(
+			sizeof(TransformedObject));
 	cube->oc = getCanonicCube();
 	cube->transf = allocNewMatrix();
 	cube->inv = allocNewMatrix();
-	cube->color[0] = 1.;
-	cube->color[1] = 0.;
-	cube->color[2] = 0.;
+	cube->color[0] = randomColorCoeff(COLOR_COEFF);
+	cube->color[1] = randomColorCoeff(COLOR_COEFF);
+	cube->color[2] = randomColorCoeff(COLOR_COEFF);
 	return cube;
 }
 
-transformedObj* Tore() {
-	transformedObj* tore = (transformedObj*) malloc(sizeof(transformedObj));
+TransformedObject* Tore() {
+	TransformedObject* tore = (TransformedObject*) malloc(
+			sizeof(TransformedObject));
 	tore->oc = getCanonicToroid();
 	tore->transf = allocNewMatrix();
 	tore->inv = allocNewMatrix();
-	tore->color[0] = 1.;
-	tore->color[1] = 0.;
-	tore->color[2] = 0.;
+	tore->color[0] = randomColorCoeff(COLOR_COEFF);
+	tore->color[1] = randomColorCoeff(COLOR_COEFF);
+	tore->color[2] = randomColorCoeff(COLOR_COEFF);
 	return tore;
 }
 
-transformedObj* Cone() {
-	transformedObj* cone = (transformedObj*) malloc(sizeof(transformedObj));
+TransformedObject* Cone() {
+	TransformedObject* cone = (TransformedObject*) malloc(
+			sizeof(TransformedObject));
 	cone->oc = getCanonicCone();
 	cone->transf = allocNewMatrix();
 	cone->inv = allocNewMatrix();
-	cone->color[0] = 1.;
-	cone->color[1] = 0.;
-	cone->color[2] = 0.;
+	cone->color[0] = randomColorCoeff(COLOR_COEFF);
+	cone->color[1] = randomColorCoeff(COLOR_COEFF);
+	cone->color[2] = randomColorCoeff(COLOR_COEFF);
 	return cone;
 }
 
-transformedObj* Sphere() {
-	transformedObj* sphere = (transformedObj*) malloc(sizeof(transformedObj));
+TransformedObject* Sphere() {
+	TransformedObject* sphere = (TransformedObject*) malloc(
+			sizeof(TransformedObject));
 	sphere->oc = getCanonicSphere();
 	sphere->transf = allocNewMatrix();
 	sphere->inv = allocNewMatrix();
-	sphere->color[0] = 1.;
-	sphere->color[1] = 0.;
-	sphere->color[2] = 0.;
+	sphere->color[0] = randomColorCoeff(COLOR_COEFF);
+	sphere->color[1] = randomColorCoeff(COLOR_COEFF);
+	sphere->color[2] = randomColorCoeff(COLOR_COEFF);
 	return sphere;
 }
 
-transformedObj* Cylindre() {
-	transformedObj* cylindre = (transformedObj*) malloc(sizeof(transformedObj));
+TransformedObject* Cylindre() {
+	TransformedObject* cylindre = (TransformedObject*) malloc(
+			sizeof(TransformedObject));
 	cylindre->oc = getCanonicCylindre();
 	cylindre->transf = allocNewMatrix();
 	cylindre->inv = allocNewMatrix();
-	cylindre->color[0] = 1.;
-	cylindre->color[1] = 0.;
-	cylindre->color[2] = 0.;
+	cylindre->color[0] = randomColorCoeff(COLOR_COEFF);
+	cylindre->color[1] = randomColorCoeff(COLOR_COEFF);
+	cylindre->color[2] = randomColorCoeff(COLOR_COEFF);
 	return cylindre;
 }
 
-void SetColor(transformedObj* obj, float r, float g, float b) {
+void setColor(TransformedObject* obj, float r, float g, float b) {
 	obj->color[0] = r;
 	obj->color[1] = g;
 	obj->color[2] = b;
 }
 
-CSGTree* allocCSGTree(transformedObj* obj, TreeType type, CSGTree* fg,
+CSGTree* allocCSGTree(TransformedObject* obj, TreeType type, CSGTree* fg,
 		CSGTree* fd) {
 	CSGTree* tree = (CSGTree*) malloc(sizeof(CSGTree));
 	tree->type = type;

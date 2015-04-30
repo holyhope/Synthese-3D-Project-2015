@@ -11,3 +11,11 @@ float randomFloat(float a, float b) {
 	float r = random * diff;
 	return a + r;
 }
+
+float randomColorCoeff(float coeff) {
+	return randomFloat(0, 1) * coeff;
+}
+
+float randomColor() {
+	return randomColorCoeff(1);
+}

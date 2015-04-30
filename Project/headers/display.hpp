@@ -12,10 +12,10 @@
 
 #define NUMBER_OBJECT_TO_DISPLAY 50
 
-void addObjectToDisplay(transformedObj *obj);
+void addObjectToDisplay(TransformedObject *obj);
 void addTreeToDisplay(CSGTree *obj);
 
-void drawObj(transformedObj* obj);
+void drawObj(TransformedObject* obj);
 void drawUnion(CSGTree* fg, CSGTree* fd);
 void drawIntersection(CSGTree* fg, CSGTree* fd);
 void drawSoustraction(CSGTree* fg, CSGTree* fd);
@@ -23,5 +23,6 @@ void drawCSGTree(CSGTree* tree);
 
 void displayAll();
 void initDisplay();
+void changeDisplayMod();
 
 #endif /* DISPLAY_HPP_ */
